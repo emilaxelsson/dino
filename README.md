@@ -7,7 +7,7 @@ Dino is a [tagless EDSL](http://okmij.org/ftp/tagless-final) supporting numeric 
 Syntactic conveniences
 --------------------------------------------------------------------------------
 
-The module [`Dino.Expression`](https://github.com/emilaxelsson/dino/blob/master/src/Dino/Expression.hs) redefines many identifiers from the prelude, so users are advised to hide the prelude when importing it. This can be done, for example, using the `NoImplicitPrelude` language extension. The main module, [`Dino`](https://github.com/emilaxelsson/dino/blob/master/src/Dino.hs), exports both `Dino.Expression` and `Dino.Prelude`, where the latter is a subset of the standard prelude plus a few extra definitions.
+The module [`Dino.Expression`](https://hackage.haskell.org/package/dino/docs/Dino-Expression.html) redefines many identifiers from the prelude, so users are advised to hide the prelude when importing it. This can be done, for example, using the `NoImplicitPrelude` language extension. The main module, [`Dino`](https://hackage.haskell.org/package/dino/docs/Dino.html), exports both `Dino.Expression` and `Dino.Prelude`, where the latter is a subset of the standard prelude plus a few extra definitions.
 
 Dino provides a newtype wrapper, `Exp`, which allows EDSL terms to be used directly as numbers and strings; for example:
 
@@ -38,7 +38,7 @@ beaufortScale v = cases
   ( Otherwise  --> "storm" )
 ```
 
-Browse the [`Dino.Expression`](https://github.com/emilaxelsson/dino/blob/master/src/Dino/Expression.hs) documentation to find different variations on `cases`, including a version for matching on enumerations without a fall-through case.
+Browse the [`Dino.Expression`](https://hackage.haskell.org/package/dino/docs/Dino-Expression.html) documentation to find different variations on `cases`, including a version for matching on enumerations without a fall-through case.
 
 ### A `Maybe`-like monad
 
@@ -152,7 +152,7 @@ instance (VarExp e, LetIntensional e) => LetExp (Intensional e)
 
 In other words, you get to *define your semantics using first-order constructs and automatically derive a higher-order interface*.
 
-As an example, the `Reified` interpretation (for AST extraction; see [Dino.Interpretation](https://github.com/emilaxelsson/dino/blob/master/src/Dino/Expression.hs)) is an example of one that only instantiates first-order classes (`LetIntensional` and friends). But the combined type `Intensional Reified` supports a higher-order interface (`LetExp` and friends).
+As an example, the `Reified` interpretation (for AST extraction; see [Dino.Interpretation](https://hackage.haskell.org/package/dino/docs/Dino-Interpretation.html)) is an example of one that only instantiates first-order classes (`LetIntensional` and friends). But the combined type `Intensional Reified` supports a higher-order interface (`LetExp` and friends).
 
 But what about adding new higher-order constructs? Then one must go through the work of defining an instance such as the one for `LetExp (Intensional e)` above. Fortunately, defining such instances is made very easy by the following function:
 
