@@ -170,3 +170,23 @@ unbind ::
 It takes a body represented as a function, and returns a body as an open expression along with the generated variable name. This name is guaranteed not to lead to capturing, as long all binders are generated using the same method. There is also `unbind2`, for constructs that introduce two local variables.
 
 For the curious reader, `unbind` is implemented using the technique in [Using Circular Programming for Higher-Order Syntax](https://emilaxelsson.github.io/documents/axelsson2013using.pdf).
+
+### Parallel interpretation
+
+The `(:×:)` type allows two interpretations to run in parallel. This type derives many syntactic classes automatically:
+
+```haskell
+instance (ConstExp e1, ConstExp e2) => ConstExp (e1 :×: e2)
+instance (NumExp e1,   NumExp e2)   => NumExp   (e1 :×: e2)
+...
+```
+
+However, it is not possible to give such general instances for classes with higher-order constructs (e.g. `LetExp`). Instead, there are instances for intensional classes, such as this one:
+
+```haskell
+instance (LetIntensional e1, LetIntensional e2) => LetIntensional (e1 :×: e2)
+```
+
+As seen earlier, we can derive `LetExp` from `LetIntensional` by using the `Intensional` wrapper. So, in order to obtain a parallel interpretation for `LetExp`, we simply use the type `Intensional (e1 :×: e2)`, where `e1` and `e2` are the interpretations we want to run. (Of course, `(:×:)` can be nested in order to run more than two interpretations in parallel.)
+
+Note that we cannot run standard evaluation as a parallel interpretation. This is because the monads for standard evaluation (e.g. `Identity` or `Maybe`) implement `LetExp` but not `LetIntensional`. In order to do evaluation in a parallel setting, use the type `EvalEnv`, which evaluates using a variable environment.
