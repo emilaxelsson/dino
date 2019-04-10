@@ -97,7 +97,7 @@ instance FracExp SafeDiv where
 
 ### Intensional analysis
 
-Dino has special support for intensional interpretation of higher-order constructs (i.e. interpretations that inspect the syntax).
+Dino has special support for intensional interpretation of higher-order constructs (i.e. interpretations that inspect the syntax). The general idea is introduced in [Oleg Kiselyov's notes](http://okmij.org/ftp/tagless-final/course/TTFdBHO.hs).
 
 Consider the following two classes:
 
