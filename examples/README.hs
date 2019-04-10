@@ -89,11 +89,22 @@ evalSafeDiv
   -> Maybe a
 evalSafeDiv = fromSafeDiv . unExp
 
-ex2 :: (ConstExp e, NumExp e, FracExp e, LogicExp e, CompareExp e) => Exp e Double
-ex2 = 1+2/3
+exDiv1 :: (ConstExp e, NumExp e, FracExp e, LogicExp e, CompareExp e) => Exp e Double
+exDiv1 = 1+2/3
 
-ex3 :: (ConstExp e, NumExp e, FracExp e, LogicExp e, CompareExp e) => Exp e Double
-ex3 = 1+2/0
+exDiv2 :: (ConstExp e, NumExp e, FracExp e, LogicExp e, CompareExp e) => Exp e Double
+exDiv2 = 1+2/0
+
+ex2 ::
+     (ConstExp e, NumExp e, CompareExp e, CondExp e, LetExp e)
+  => Exp e Double
+  -> Exp e Double
+ex2 a = letE "x" expensive $ \x ->
+  if a > 10
+    then x*2
+    else x*3
+  where
+    expensive = a*a*a*a*a*a*a*a
 
 
 
@@ -106,5 +117,5 @@ tests = do
   print $ eval $ foo 11 12
   print $ eval $ foo 11 0
   fooExp
-  print $ evalSafeDiv ex2
-  print $ evalSafeDiv ex3
+  print $ evalSafeDiv exDiv1
+  print $ evalSafeDiv exDiv2

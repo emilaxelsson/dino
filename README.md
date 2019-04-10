@@ -7,7 +7,7 @@ Dino is a [tagless EDSL](http://okmij.org/ftp/tagless-final) supporting numeric 
 Syntactic conveniences
 --------------------------------------------------------------------------------
 
-The module [`Dino.Expression`](https://hackage.haskell.org/package/dino/docs/Dino-Expression.html) redefines many identifiers from the prelude, so users are advised to hide the prelude when importing it. This can be done, for example, using the `NoImplicitPrelude` language extension. The main module, [`Dino`](https://hackage.haskell.org/package/dino/docs/Dino.html), exports both `Dino.Expression` and `Dino.Prelude`, where the latter is a subset of the standard prelude plus a few extra definitions.
+The module [Dino.Expression](https://hackage.haskell.org/package/dino/docs/Dino-Expression.html) redefines many identifiers from the prelude, so users are advised to hide the prelude when importing it. This can be done, for example, using the `NoImplicitPrelude` language extension. The main module, [Dino](https://hackage.haskell.org/package/dino/docs/Dino.html), exports both `Dino.Expression` and `Dino.Prelude`, where the latter is a subset of the standard prelude plus a few extra definitions.
 
 Dino provides a newtype wrapper, `Exp`, which allows EDSL terms to be used directly as numbers and strings; for example:
 
@@ -38,7 +38,7 @@ beaufortScale v = cases
   ( Otherwise  --> "storm" )
 ```
 
-Browse the [`Dino.Expression`](https://hackage.haskell.org/package/dino/docs/Dino-Expression.html) documentation to find different variations on `cases`, including a version for matching on enumerations without a fall-through case.
+Browse the [Dino.Expression](https://hackage.haskell.org/package/dino/docs/Dino-Expression.html) documentation to find different variations on `cases`, including a version for matching on enumerations without a fall-through case.
 
 ### A `Maybe`-like monad
 
@@ -120,7 +120,10 @@ class LetIntensional e where
 The former is the class that is exposed to the EDSL user. It provides a convenient higher-order construct for sharing values. Here is an example of its use:
 
 ```haskell
-ex2 :: Exp e Double -> Exp e Double
+ex2 ::
+     (ConstExp e, NumExp e, CompareExp e, CondExp e, LetExp e)
+  => Exp e Double
+  -> Exp e Double
 ex2 a = letE "x" expensive $ \x ->
   if a > 10
     then x*2
@@ -157,8 +160,8 @@ As an example, the `Reified` interpretation (for AST extraction; see [Dino.Inter
 But what about adding new higher-order constructs? Then one must go through the work of defining an instance such as the one for `LetExp (Intensional e)` above. Fortunately, defining such instances is made very easy by the following function:
 
 ```haskell
-unbind
-  :: (VarExp e, DinoType a)
+unbind ::
+     (VarExp e, DinoType a)
   => Text                                 -- ^ Variable base name
   -> (Intensional e a -> Intensional e b) -- ^ Body parameterized by its free variable
   -> (Text, Intensional e b)              -- ^ Generated variable and function body
