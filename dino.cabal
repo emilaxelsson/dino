@@ -12,7 +12,6 @@ homepage:             https://github.com/emilaxelsson/dino
 bug-reports:          https://github.com/emilaxelsson/dino/issues
 category:             Language
 build-type:           Simple
-extra-source-files:   ChangeLog.md
 cabal-version:        >=1.10
 
 extra-source-files:   README.md
