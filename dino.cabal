@@ -1,8 +1,8 @@
 name:                 dino
-version:              0.1
+version:              0.1.1
 synopsis:             A convenient tagless EDSL
 description:          For more information, see the
-                      <https://github.com/emilaxelsson/trackit/blob/master/README.md README>.
+                      <https://github.com/emilaxelsson/dino/blob/master/README.md README>.
 license:              BSD3
 license-file:         LICENSE
 author:               Emil Axelsson
