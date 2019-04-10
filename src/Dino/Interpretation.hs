@@ -576,7 +576,7 @@ unbind base f = (v, Intensional (Fold bsb' :×: eb))
     (v, bsb') = freshVar base bsb
   -- This function uses the technique described in
   -- "Using Circular Programming for Higher-Order Syntax"
-  -- <http://www.cse.chalmers.se/~emax/documents/axelsson2013using.pdf>
+  -- <https://emilaxelsson.github.io/documents/axelsson2013using.pdf>
 
 -- | A version of 'unbind' for 2-argument functions
 unbind2 ::

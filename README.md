@@ -1,6 +1,6 @@
 # Dino
 
-Dino is a simple [tagless EDSL](okmij.org/ftp/tagless-final) supporting numeric and logic expressions, conditionals, explicit sharing, etc.
+Dino is a [tagless EDSL](http://okmij.org/ftp/tagless-final) supporting numeric and logic expressions, conditionals, explicit sharing, etc.
 
 
 
@@ -65,7 +65,7 @@ runOptional :: (...) => Optional e (e a) -> e (Maybe a)
 Semantic conveniences
 --------------------------------------------------------------------------------
 
-On the interpretation side, most Dino constructs provide default implementations for applicative functors, making it easy to derive interpretations for custom applicative functors. There is also special support for intensional analysis of higher-order constructs (i.e. constructs that introduce local variables).
+On the interpretation side, most Dino constructs provide default implementations for monads (many just requiring `Applicative`), making it easy to derive interpretations for custom monads. There is also special support for intensional analysis of higher-order constructs (i.e. constructs that introduce local variables).
 
 ### Standard interpretation with special cases
 
@@ -97,9 +97,54 @@ instance FracExp SafeDiv where
 
 ### Intensional analysis
 
-Dino has special support for intensional interpretation of higher-order constructs.
+Dino has special support for intensional interpretation of higher-order constructs (i.e. interpretations that inspect the syntax).
 
-For example, the class `LetExp` (containing the higher-order `letE` method) has an intensional counterpart `LetIntensional` with the first-order method `letI`. Intensional interpretations (e.g. AST extraction) can be implemented by instantiating `LetIntensional` (and other intensional classes) and then wrap the interpretation in the `Intensional` newtype. `Intensional` automatically derives `LetExp` due to the following instance:
+Consider the following two classes:
+
+```haskell
+class LetExp e where
+  letE :: DinoType a
+       => Text         -- ^ Variable base name
+       -> e a          -- ^ Value to share
+       -> (e a -> e b) -- ^ Body
+       -> e b
+
+class LetIntensional e where
+  letI :: DinoType a
+       => Text -- ^ Variable name
+       -> e a
+       -> e b -- ^ Body (open term)
+       -> e b
+```
+
+The former is the class that is exposed to the EDSL user. It provides a convenient higher-order construct for sharing values. Here is an example of its use:
+
+```haskell
+ex2 :: Exp e Double -> Exp e Double
+ex2 a = letE "x" expensive $ \x ->
+  if a > 10
+    then x*2
+    else x*3
+  where
+    expensive = a*a*a*a*a*a*a*a
+```
+
+But the higher-order interface is problematic for intensional interpretations (e.g. AST extraction). The main problem is to come up with a representation of the variable to which the body can be applied. One must make sure that the chosen variable does not lead to capturing. For such interpretations, the first-order function `letI` is more suitable.
+
+`letI` is similar to `letE`, but with some important differences:
+
+  * The "body" argument passed to `letE` is a function while the `letI` has an open expression as body.
+  * The name passed to `letE` is just a suggested *base* of the variable name. The user does not need to worry about potential name clashing.
+  * The name passed to `letI` is the *actual* variable name. The caller must guarantee that this name does not clash with other variables.
+
+The thing to note is this:
+
+  * `letE` is *easy* to call, but *hard* to implement.
+  * `letI` is *hard* to call, but *easy* to implement.
+
+`letI` is hard to call, because it must be given a name that does not lead to capturing. But for an implementor, `letI` is very nice. Why? Because it gets a variable name from someone else, and it can directly inspect the body without first applying it to an argument.
+
+The good news is that Dino provides the means to bridge the gap between `letE` and `letI`: the `Intensional` newtype wrapper. Given a `LetIntensional` instance for an interpretation, we can automatically derive `LetExp` by just wrapping it in `Intensional`, due to the following instance:
 
 ```haskell
 instance (VarExp e, LetIntensional e) => LetExp (Intensional e)
@@ -107,4 +152,18 @@ instance (VarExp e, LetIntensional e) => LetExp (Intensional e)
 
 In other words, you get to *define your semantics using first-order constructs and automatically derive a higher-order interface*.
 
-As an example, the `Reified` interpretation (for AST extraction) is an example of one that only instantiates first-order classes. But the combined type `Intensional Reified` supports a higher-order interface.
+As an example, the `Reified` interpretation (for AST extraction; see [Dino.Interpretation](https://github.com/emilaxelsson/dino/blob/master/src/Dino/Expression.hs)) is an example of one that only instantiates first-order classes (`LetIntensional` and friends). But the combined type `Intensional Reified` supports a higher-order interface (`LetExp` and friends).
+
+But what about adding new higher-order constructs? Then one must go through the work of defining an instance such as the one for `LetExp (Intensional e)` above. Fortunately, defining such instances is made very easy by the following function:
+
+```haskell
+unbind
+  :: (VarExp e, DinoType a)
+  => Text                                 -- ^ Variable base name
+  -> (Intensional e a -> Intensional e b) -- ^ Body parameterized by its free variable
+  -> (Text, Intensional e b)              -- ^ Generated variable and function body
+```
+
+It takes a body represented as a function, and returns a body as an open expression along with the generated variable name. This name is guaranteed not to lead to capturing, as long all binders are generated using the same method. There is also `unbind2`, for constructs that introduce two local variables.
+
+For the curious reader, `unbind` is implemented using the technique in [Using Circular Programming for Higher-Order Syntax](https://emilaxelsson.github.io/documents/axelsson2013using.pdf).
