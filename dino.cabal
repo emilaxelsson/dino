@@ -1,5 +1,5 @@
 name:                 dino
-version:              0.1.1
+version:              0.1.2
 synopsis:             A convenient tagless EDSL
 description:          For more information, see the
                       <https://github.com/emilaxelsson/dino/blob/master/README.md README>.
@@ -35,7 +35,7 @@ library
                         containers < 0.7,
                         exceptions < 0.11,
                         errors < 2.4,
-                        hashable < 1.3,
+                        hashable < 1.4,
                         monad-loops < 0.5,
                         mtl < 2.3,
                         text < 1.3,
@@ -78,9 +78,9 @@ test-suite tests
   other-modules:        DiffTest
   build-depends:        base
                       , dino
-                      , tasty < 1.3
-                      , tasty-quickcheck < 0.11
-                      , tasty-th < 0.2
+                      , tasty
+                      , tasty-quickcheck
+                      , tasty-th
                       , text
                       , unordered-containers
   ghc-options:          -Wall -threaded -rtsopts -with-rtsopts=-N
@@ -96,7 +96,7 @@ test-suite examples
   hs-source-dirs:       examples
   main-is:              Examples.hs
   other-modules:        README
-  build-depends:        base >= 4.10 && < 5
+  build-depends:        base
                       , dino
   ghc-options:          -Wall
   default-language:     Haskell2010
