@@ -16,8 +16,6 @@ import Control.Monad.Loops (dropWhileM, firstM)
 import Data.Bifunctor (Bifunctor (..))
 import Data.List ((\\))
 import Data.String (IsString (..))
-import Data.Text (Text)
-import GHC.TypeLits (KnownSymbol, Symbol)
 import qualified GHC.Records as GHC
 import GHC.Stack
 
