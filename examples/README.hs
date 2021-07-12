@@ -87,7 +87,7 @@ instance FracExp SafeDiv where
 evalSafeDiv
   :: (forall e. (ConstExp e, NumExp e, FracExp e, LogicExp e, CompareExp e) => Exp e a)
   -> Maybe a
-evalSafeDiv = fromSafeDiv . unExp
+evalSafeDiv e = fromSafeDiv (unExp e)
 
 exDiv1 :: (ConstExp e, NumExp e, FracExp e, LogicExp e, CompareExp e) => Exp e Double
 exDiv1 = 1+2/3
